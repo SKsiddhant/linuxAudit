@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set executable permission
+        run: chmod +x MyLinuxAudit.sh
+
+      - name: Run script in compact mode
+        run: sudo ./MyLinuxAudit.sh --mode compact
+
+      - name: Run script in txt mode
+        run: sudo ./MyLinuxAudit.sh --mode txt
