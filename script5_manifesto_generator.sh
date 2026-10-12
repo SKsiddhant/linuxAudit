@@ -21,10 +21,10 @@ echo "--------------------------------------------------------"
 echo "  Answer three questions to generate your manifesto."
 echo ""
 
-# --- Prompt the user for three inputs using 'read' ---
-read -p "  1. Name one open-source tool you use every day: " TOOL
-read -p "  2. In one word, what does 'freedom' mean to you? " FREEDOM
-read -p "  3. Name one thing you would build and share freely: " BUILD
+# --- Prompt the user for three inputs using 'read' (-r keeps backslashes as typed) ---
+read -r -p "  1. Name one open-source tool you use every day: " TOOL
+read -r -p "  2. In one word, what does 'freedom' mean to you? " FREEDOM
+read -r -p "  3. Name one thing you would build and share freely: " BUILD
 
 echo ""
 echo "  Generating your manifesto..."
@@ -37,12 +37,14 @@ DATE=$(date '+%d %B %Y')
 OUTPUT="manifesto_$(whoami).txt"
 
 # --- Write the header to the file using > (overwrite) ---
-echo "========================================" > "$OUTPUT"
-echo "   My Open Source Manifesto" >> "$OUTPUT"
-echo "   $DATE" >> "$OUTPUT"
-echo "   By: Siddhant Kothiya (24bce10109)" >> "$OUTPUT"
-echo "========================================" >> "$OUTPUT"
-echo "" >> "$OUTPUT"
+{
+    echo "========================================"
+    echo "   My Open Source Manifesto"
+    echo "   $DATE"
+    echo "   By: Siddhant Kothiya (24bce10109)"
+    echo "========================================"
+    echo ""
+} > "$OUTPUT"
 
 # --- Compose the manifesto paragraph by concatenating variables ---
 MANIFESTO="Every day, I rely on $TOOL — a tool built not for profit, but for people."
@@ -54,9 +56,11 @@ MANIFESTO="$MANIFESTO so that someone else can stand on my shoulders, just as I 
 MANIFESTO="$MANIFESTO stood on the shoulders of Linus Torvalds and thousands of contributors."
 
 # --- Write the manifesto paragraph to the file using >> (append) ---
-echo "$MANIFESTO" >> "$OUTPUT"
-echo "" >> "$OUTPUT"
-echo "========================================" >> "$OUTPUT"
+{
+    echo "$MANIFESTO"
+    echo ""
+    echo "========================================"
+} >> "$OUTPUT"
 
 # --- Confirm and display the saved manifesto ---
 echo "  Manifesto saved to: $OUTPUT"

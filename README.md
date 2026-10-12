@@ -98,6 +98,14 @@ chmod +x script5_manifesto_generator.sh
 
 ---
 
+## Tests
+```bash
+bash tests/run_tests.sh
+```
+CI also runs `shellcheck` on the scripts.
+
+`script2_package_inspector.sh` needs `dpkg` (Debian/Ubuntu) and now says so instead of failing with a confusing error elsewhere.
+
 ## Dependencies
 
 | Dependency | Purpose |
