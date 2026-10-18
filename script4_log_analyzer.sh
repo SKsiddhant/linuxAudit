@@ -50,9 +50,11 @@ echo "--------------------------------------------------------"
 
 # --- Count keyword matches by reading file line by line ---
 COUNT=0
+KEYWORD_LC=${KEYWORD,,}    # lower-case once, for a case-insensitive plain-text match
 while IFS= read -r LINE; do
-    # -i for case-insensitive match; -q suppresses output (just checks true/false)
-    if echo "$LINE" | grep -iq "$KEYWORD"; then
+    # Pure-bash substring test. The old version started a `grep` process for every line, which made
+    # large logs (/var/log/syslog) extremely slow, and treated the keyword as a regular expression.
+    if [[ ${LINE,,} == *"$KEYWORD_LC"* ]]; then
         COUNT=$((COUNT + 1))    # Increment counter each time keyword is found
     fi
 done < "$LOGFILE"
@@ -63,7 +65,8 @@ echo "--------------------------------------------------------"
 # --- Print the last 5 lines that contain the keyword ---
 echo "  Last 5 matching lines:"
 echo ""
-MATCHES=$(grep -i "$KEYWORD" "$LOGFILE" | tail -5)
+# -F: plain text (so "a.b" or "[error]" are not regexes); -e: the keyword may start with "-"
+MATCHES=$(grep -iF -e "$KEYWORD" "$LOGFILE" | tail -5)
 if [ -z "$MATCHES" ]; then
     echo "  (no matching lines found)"
 else

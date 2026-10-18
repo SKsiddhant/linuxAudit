@@ -8,8 +8,21 @@
 # Usage: ./script2_package_inspector.sh [package-name]
 #        If no argument given, defaults to the linux-image package.
 
-# --- Default to linux-image if no argument provided ---
-PACKAGE=${1:-$(dpkg -l | grep -oP 'linux-image-\S+' | head -1)}
+# --- This script relies on dpkg, so it only works on Debian/Ubuntu-based systems ---
+if ! command -v dpkg >/dev/null 2>&1; then
+    echo "ERROR: dpkg not found. This script supports Debian/Ubuntu-based systems only."
+    exit 1
+fi
+
+# --- Default to an installed linux-image package if no argument provided ---
+# (The old default grepped every line of `dpkg -l` for "linux-image-", which also matched
+#  descriptions of unrelated packages and packages that were not installed.)
+DEFAULT_PACKAGE=$(dpkg -l 'linux-image-*' 2>/dev/null | awk '/^ii/ {print $2; exit}')
+PACKAGE=${1:-$DEFAULT_PACKAGE}
+if [ -z "$PACKAGE" ]; then
+    echo "ERROR: no linux-image package found. Pass a package name: $0 <package>"
+    exit 1
+fi
 
 echo "========================================================"
 echo "         FOSS Package Inspector"
@@ -18,7 +31,7 @@ echo "  Checking package: $PACKAGE"
 echo "--------------------------------------------------------"
 
 # --- Check if the package is installed using dpkg ---
-if dpkg -l "$PACKAGE" 2>/dev/null | grep -q "^ii"; then
+if dpkg -l -- "$PACKAGE" 2>/dev/null | grep -q "^ii"; then
     echo "  Status  : INSTALLED"
 
     # Extract version and description using dpkg-query
