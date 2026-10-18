@@ -1,0 +1,3 @@
+# Files the scripts generate in the working directory
+manifesto_*.txt
+MyLinuxAudit_*.txt
